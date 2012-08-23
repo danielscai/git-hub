@@ -2,20 +2,14 @@
 -export([go/0,loop/0]).
 
 go()->
-  Pid=spawn(echo,loop,[]),
-  Pid!{self(),hello},
-  receive
-    {Pid,Msg}->
-      io:format("~w~n",[Msg]).
-  end,
-  Pid!stop.
+  Loop=spawn(echo,loop,[]),
+  Loop!{self(),hello}.
 
 loop()->
   receive
-    {From,Msg}->
-      From!{self(),Msg},
+    {_From,Msg}->
+      {self(),Msg},
       loop();
     stop->
       true
-end.
-
+  end.
