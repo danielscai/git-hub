@@ -11,6 +11,6 @@ start_proc(0,Start)->
 start_proc(Num,Start)->
   NPid=spawn(myring,start_proc,[Num-1,Start]),
   receive 
-    ok-> io:format("~w~w~n",[Num,NPid])
+    ok-> io:format("number:~w - pid:~w ~n",[Num,NPid])
   end,
   NPid!ok.
