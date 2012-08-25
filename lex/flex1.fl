@@ -1,0 +1,23 @@
+
+%{
+#include <stdio.h>
+%}
+
+NUM [0-9]
+VAR [a-zA-z]
+WS  [ \t]
+
+%%
+set printf("(STMT set)");
+{NUM}+  printf( "(NUM %s)",yytext);
+{VAR}+  printf( "(VAR %s)",yytext);
+-       printf( "(OP minus)");
+\+      printf( "(OP plus)");
+=       printf( "(OP equal)");
+;       printf( "(END stmt)");
+\n      printf( "\n\n");
+{WS}+
+<<EOF>> printf("END of parse\n");
+yyterminate(0)
+%%
+

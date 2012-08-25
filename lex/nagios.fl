@@ -1,0 +1,29 @@
+
+%{
+#include <stdio.h>
+%}
+
+DEFINE  define
+
+HOST            host
+SERVICE         service 
+SERVICE_GROUP   service_group
+SERVICE_DEP     service_dependency
+START_PARSE     {
+END_PARSE       }
+
+HOST_NAME       hostname
+IP_ADDR         ipaddress
+COMMAND         check_command
+CONTACTS        contacts
+NOTES_URL       notes_url
+NORMAL_CHECK_INTERVAL   normal_check_interval
+CHECK_PERIOD    check_peiod
+
+COMMENT #.*$
+WS      [ \t]
+
+%%
+
+
+%%
