@@ -15,6 +15,8 @@ int main()
 
 %}
 
+%token SET NUMBER VARIABLE OP_MINUS OP_PLUS ASSIGN END 
+
 %%
 statements:
   | statements statement

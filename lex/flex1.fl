@@ -1,6 +1,7 @@
 
 %{
 #include <stdio.h>
+#include "bison1.tab.h"
 %}
 
 NUM [0-9]
@@ -8,16 +9,14 @@ VAR [a-zA-z]
 WS  [ \t]
 
 %%
-set printf("(STMT set)");
-{NUM}+  printf( "(NUM %s)",yytext);
-{VAR}+  printf( "(VAR %s)",yytext);
--       printf( "(OP minus)");
-\+      printf( "(OP plus)");
-=       printf( "(OP equal)");
-;       printf( "(END stmt)");
-\n      printf( "\n\n");
+set return SET;
+{NUM}+  return NUMBER;
+{VAR}+  return VARIABLE;
+-       return OP_MINUS;
+\+      return OP_PLUS;
+=       return ASSIGN;
+;       return END;
+\n      
 {WS}+
-<<EOF>> printf("END of parse\n");
-yyterminate(0)
 %%
 
