@@ -1,6 +1,7 @@
 -module(myring).
 -export([start/1,start_proc/2]).
 -export([sleep/2]).
+%%-export([sleep/1]).
 
 start(Num)->
   FristLoop=spawn(myring,start_proc,[Num,self()]),
@@ -16,6 +17,8 @@ start_proc(Num,Start)->
 %%    0->sleep(1000)
 %%  end,
 %%  sleep(Num,1000),
+  sleep(Num,1000),
+  io:format("~w~n",[Num-1]),
   NPid=spawn(myring,start_proc,[Num-1,Start]),
   receive 
     ok-> io:format("number:~w - pid:~w ~n",[Num,NPid])
