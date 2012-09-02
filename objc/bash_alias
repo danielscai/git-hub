@@ -1,0 +1,7 @@
+function coca_complier()
+{
+  gcc $@ -fconstant-string-class=NSConstantString -lobjc -lgnustep-base
+}
+
+alias coca='coca_complier'
+
