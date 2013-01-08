@@ -9,6 +9,7 @@
 *GET::
 	/zeus/iaas/api/system/vm/{availability_zone}/{management_zone}/{tenant_zone}/{vm_id}
 
+
 2.2. Description:
 -----------------
 
@@ -21,3 +22,9 @@ none
 
 * HTTP response code:
 
+2.5. Preparing Ubuntu 12.10
+-----------------
+
+* After you install Ubuntu 12.10 Server 64bits, Go to the sudo mode and don't leave it until the end of this guide::
+
+   sudo su
