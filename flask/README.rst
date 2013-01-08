@@ -6,7 +6,9 @@
 
 2.1. Interface
 -----------------
+
 * GET::
+
     /zeus/iaas/api/system/vm/{availability_zone}/{management_zone}/{tenant_zone}/{vm_id}
 
 
