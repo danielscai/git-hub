@@ -4,6 +4,8 @@ import get_auth_token as auth
 import json
 import httplib
 
+class OS
+    def __init__(self,auth):
 def list_servers(auth):
     adminURL="172.16.134.211:8774"
     headers= {"Content-type": "application/json","X-Auth-Token":auth.apitoken}
@@ -16,6 +18,10 @@ def list_servers(auth):
     code=response.status
     payload=response.read()
     return payload
+
+def read_server(params):
+    vm_id=params['vm_id']
+    return vm_id
 
 def create_server(auth):
     adminURL="172.16.134.211:8774"
