@@ -32,7 +32,9 @@ def vm_fun(availability_zone,management_zone,tenant_zone,vm_id):
     return ret_json
 
   elif request.method == 'PUT':
-    pass
+    payload=request.data
+    ret_json=os.update_server(vm_id,payload)
+    return ret_json
 
   elif request.method == 'DELETE':
     ret_json=os.delete_server(vm_id)

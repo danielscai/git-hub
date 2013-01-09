@@ -32,6 +32,18 @@ class OSMA:
     fun_url='/servers' + '/' + vm_id
     payload=self.request('DELETE',fun_url)
     return payload
+
+  def update_server(self,vm_id,payload):
+    '''update server infomation'''
+
+    fun_url='/servers' +'/' + vm_id
+    payload_arr=json.loads(payload)
+
+    if payload_arr['image_id']:
+      fun_url+='/action'
+    print payload_arr
+    return 'hi'
+    
     
   def create_server(self,vm_name,payload):
     ''' create server in openstack'''
