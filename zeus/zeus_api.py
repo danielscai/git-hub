@@ -27,7 +27,6 @@ def vm_fun(availability_zone,management_zone,tenant_zone,vm_id):
 
   elif request.method == 'POST':
     vm_name=vm_id
-    print 'create'
     payload=request.data
     ret_json=os.create_server(vm_name,payload)
     return ret_json
