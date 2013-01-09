@@ -7,8 +7,10 @@ from os_mid_api import OSMA
 
 app = Flask(__name__)
 url = "172.16.134.211:5000"
-osuser = "user_one"
-ospassword = "user_one"
+#osuser = "user_one"
+#ospassword = "user_one"
+osuser = "dcai"
+ospassword = "welcome1"
 
 os=OSMA(url,osuser,ospassword)
 
@@ -33,7 +35,9 @@ def vm_fun(availability_zone,management_zone,tenant_zone,vm_id):
     pass
 
   elif request.method == 'DELETE':
-    pass
+    ret_json=os.delete_server(vm_id)
+    print 'delete'
+    return ret_json
 
   else:
     params={'availability_zone':availability_zone,

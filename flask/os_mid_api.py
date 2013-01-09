@@ -27,6 +27,12 @@ class OSMA:
     payload=self.request('GET',fun_url)
     return payload
 
+  def delete_server(self,vm_id):
+    '''delete specified vm'''
+    fun_url='/servers' + '/' + vm_id
+    payload=self.request('DELETE',fun_url)
+    return payload
+    
   def create_server(self,vm_name,payload):
     ''' create server in openstack'''
     
@@ -67,15 +73,16 @@ class OSMA:
     params = json.dumps(params_init)
     payload=self.request('POST',fun_url,params)
     
-    print json.dumps(payload,indent=4)
-    exit(0)
-    server_arr=json.loads(payload)
-    vm_id=server_arr['server']['id']
+    os_payload=json.loads(payload)
+    vm_id=os_payload['server']['id']
 
     ret_payload=self.read_server(vm_id)
-    ret_payload=self.format_to_zeus(ret_payload)
 
-    print json.dumps(ret_payload,indent=4)
+    ret_arr=json.loads(ret_payload)
+    ret_arr['vm']['vm_id']=vm_id
+    ret_payload=json.dumps(ret_arr)
+    #ret_payload['vm']['vm_id']=vm_id
+
     return ret_payload
 
   def process_nic(self,nic):
