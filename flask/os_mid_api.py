@@ -10,14 +10,102 @@ class OSMA:
     self.conn=httplib.HTTPConnection(self.auth.adminURI)
     
   def read_server(self,vm_id):
+    '''read a specific vm's infomation, 
+    id of the vm should be provided'''
+
+    fun_url='/servers' +'/' + vm_id
+    payload=self.request('GET',fun_url)
+    payload=self.format_to_zeus(payload)
+    return payload
+
+  def list_servers(self):
+    ''' list all servers, for debug use, 
+    not included in develop docs'''
+
+    fun_url='/servers'
+    payload=self.request('GET',fun_url)
+    return payload
+
+  def create_server(self,vm_name,params):
+    ''' create server in openstack'''
+    
+    fun_url='/servers'
+    params_init = {
+      "server" : {
+        "name" : vm_name,
+        "imageRef" : "7f5bc981-0aba-41c1-9d7e-f067e5b5aef4",
+        "flavorRef" : "1",
+        "metadata" : {
+          "My Server Name" : "Apache1"
+        },
+        "personality" : [ 
+          {
+            "path" : "/etc/banner.txt",
+            "contents" : "ICAgICAgDQoiQSBjbG91ZCBkb2VzIG5vdCBrbm93IHdoeSBp \
+dCBtb3ZlcyBpbiBqdXN0IHN1Y2ggYSBkaXJlY3Rpb24gYW5k\
+IGF0IHN1Y2ggYSBzcGVlZC4uLkl0IGZlZWxzIGFuIGltcHVs\
+c2lvbi4uLnRoaXMgaXMgdGhlIHBsYWNlIHRvIGdvIG5vdy4g\
+QnV0IHRoZSBza3kga25vd3MgdGhlIHJlYXNvbnMgYW5kIHRo\
+ZSBwYXR0ZXJucyBiZWhpbmQgYWxsIGNsb3VkcywgYW5kIHlv\
+dSB3aWxsIGtub3csIHRvbywgd2hlbiB5b3UgbGlmdCB5b3Vy\
+c2VsZiBoaWdoIGVub3VnaCB0byBzZWUgYmV5b25kIGhvcml6\
+b25zLiINCg0KLVJpY2hhcmQgQmFjaA=="
+          }
+        ]
+      }
+    }
+    
+    params = json.dumps(params_init)
+    payload=self.request('POST',fun_url,params)
+    return payload
+
+
+  def request(self,method,fun_url,params='',headers=''):
+    ''' handle http request '''
+
+    # to-do: headers should be user set when not blenk
     conn=self.conn
-    url=self.auth.adminURL+'/servers' +'/' +vm_id
-    headers= {"Content-type": "application/json","X-Auth-Token":self.auth.apitoken}
-    conn.request("GET",url,"",headers)
+    url=self.auth.adminURL + fun_url
+    headers= {"Content-type": "application/json",
+        "X-Auth-Token":self.auth.apitoken}
+    conn.request(method,url,params,headers)
     response=conn.getresponse()
     code=response.status
     payload=response.read()
     return payload
+
+  def format_to_zeus(self,os_payload):
+    ''' formate openstack payload to zeus payload,
+    refer develop documentation for more details'''
+  
+    os_data=json.loads(os_payload)
+    server=os_data['server']
+    zeus_data_tmp={}
+
+    zeus_data_tmp['vm_name']=server['name']
+    zeus_data_tmp['status']=server['status']
+    zeus_data_tmp['created_time']=server['created']
+    zeus_data_tmp['updated_time']=server['updated']
+    zeus_data_tmp['metadata']=server['metadata']
+    zeus_data_tmp['security_groups']=server['security_groups']
+    zeus_data_tmp['access_ip']=server['accessIPv4']
+    zeus_data_tmp['network']=server['addresses']
+
+    zeus_data_tmp['image']={}
+    zeus_data_tmp['image']['id']=server['image']['id']
+
+    zeus_data_tmp['config']={}
+    zeus_data_tmp['config']['id']=server['image']['id']
+
+    zeus_data_tmp['host']={}
+    zeus_data_tmp['host']['id']=server['hostId']
+
+    zeus_data_tmp['user']={}
+    zeus_data_tmp['user']['id']=server['user_id']
+
+    zeus_data={'vm':zeus_data_tmp}
+    zeus_payload=json.dumps(zeus_data)
+    return zeus_payload
     
 class OSAuth:
   import httplib
