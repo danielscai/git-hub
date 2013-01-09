@@ -20,14 +20,14 @@ os=OSMA(url,osuser,ospassword)
 def vm_fun(availability_zone,management_zone,tenant_zone,vm_id):
   ''' system vm associated functions'''
   if request.method == 'GET':
-    ret=os.read_server(vm_id)
-    return ret
+    ret_json=os.read_server(vm_id)
+    return ret_json
 
   elif request.method == 'POST':
     vm_name=vm_id
-    ret=os.create_server(vm_name,request.data)
-    print 'create'
-    return ret
+    payload=request.data
+    ret_json=os.create_server(vm_name,payload)
+    return ret_json
 
   elif request.method == 'PUT':
     pass

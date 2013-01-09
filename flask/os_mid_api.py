@@ -3,6 +3,7 @@
 import httplib
 import json 
 import re
+import base64
 
 class OSMA:
   def __init__(self,url,osuser,ospassword):
@@ -26,39 +27,84 @@ class OSMA:
     payload=self.request('GET',fun_url)
     return payload
 
-  def create_server(self,vm_name,params):
+  def create_server(self,vm_name,payload):
     ''' create server in openstack'''
     
+    payload_arr=json.loads(payload)
     fun_url='/servers'
+
+    vm=payload_arr['vm']
+    # to-do: process flavor when vm_config is given
+    # to-do 1.process public_key .
+
+#    flavor=process_flavor()
+    flavor=vm['config_id']
     params_init = {
       "server" : {
         "name" : vm_name,
-        "imageRef" : "7f5bc981-0aba-41c1-9d7e-f067e5b5aef4",
-        "flavorRef" : "1",
-        "metadata" : {
-          "My Server Name" : "Apache1"
-        },
-        "personality" : [ 
-          {
-            "path" : "/etc/banner.txt",
-            "contents" : "ICAgICAgDQoiQSBjbG91ZCBkb2VzIG5vdCBrbm93IHdoeSBp \
-dCBtb3ZlcyBpbiBqdXN0IHN1Y2ggYSBkaXJlY3Rpb24gYW5k\
-IGF0IHN1Y2ggYSBzcGVlZC4uLkl0IGZlZWxzIGFuIGltcHVs\
-c2lvbi4uLnRoaXMgaXMgdGhlIHBsYWNlIHRvIGdvIG5vdy4g\
-QnV0IHRoZSBza3kga25vd3MgdGhlIHJlYXNvbnMgYW5kIHRo\
-ZSBwYXR0ZXJucyBiZWhpbmQgYWxsIGNsb3VkcywgYW5kIHlv\
-dSB3aWxsIGtub3csIHRvbywgd2hlbiB5b3UgbGlmdCB5b3Vy\
-c2VsZiBoaWdoIGVub3VnaCB0byBzZWUgYmV5b25kIGhvcml6\
-b25zLiINCg0KLVJpY2hhcmQgQmFjaA=="
-          }
-        ]
+        "imageRef" : vm['image_id'],
+        "flavorRef" : flavor,
       }
     }
+
+    server=params_init['server']
+
+    self.process_nic(vm['nic'])  
+
+    if vm.has_key('metadata'):
+      server['metadata']=vm['metadata']
+
+    if vm.has_key('ssh_options'):
+      server['personality']=self.process_ssh_options(vm['ssh_options'])
+
+    if vm.has_key('security_zone'):
+      server['security_groups']=vm['security_zone']
+
+    # host parameter is not supported yet.
+    if vm.has_key('host'):
+      pass
     
     params = json.dumps(params_init)
     payload=self.request('POST',fun_url,params)
-    return payload
+    
+    print json.dumps(payload,indent=4)
+    exit(0)
+    server_arr=json.loads(payload)
+    vm_id=server_arr['server']['id']
 
+    ret_payload=self.read_server(vm_id)
+    ret_payload=self.format_to_zeus(ret_payload)
+
+    print json.dumps(ret_payload,indent=4)
+    return ret_payload
+
+  def process_nic(self,nic):
+    '''process network related functions'''
+    ### not implemented yet.
+    nic1=nic[0]
+    network=nic1['network']
+    return 'none'
+
+  def process_ssh_options(self,ssh_options):
+    ''' process ssh_options for vm creation,
+    process private_key and authorized_keys, 
+    public_key is not included'''
+
+    personality=[]
+    if ssh_options.has_key('private_key'):
+      private_key={
+        'path':'/root/.ssh/id_rsa',
+        'contents':base64.b64encode(ssh_options['private_key'])
+      }
+      personality.append(private_key)
+
+    if ssh_options.has_key('authorized_keys'):
+      authorized_keys={
+        'path':'/root/.ssh/authorized_keys',
+        'contents':base64.b64encode(ssh_options['authorized_keys'])
+      }
+      personality.append(authorized_keys)
+    return personality
 
   def request(self,method,fun_url,params='',headers=''):
     ''' handle http request '''
@@ -87,7 +133,7 @@ b25zLiINCg0KLVJpY2hhcmQgQmFjaA=="
     zeus_data_tmp['created_time']=server['created']
     zeus_data_tmp['updated_time']=server['updated']
     zeus_data_tmp['metadata']=server['metadata']
-    zeus_data_tmp['security_groups']=server['security_groups']
+    zeus_data_tmp['security_zone']=server['security_groups']
     zeus_data_tmp['access_ip']=server['accessIPv4']
     zeus_data_tmp['network']=server['addresses']
 
