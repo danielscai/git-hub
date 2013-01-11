@@ -54,6 +54,7 @@ class OSAuth:
     self.resp=dd
     self.apitoken=self.resp['access']['token']['id']
     self.adminURL=self.resp['access']['serviceCatalog'][0]['endpoints'][0]['adminURL']
+    self.access=self.resp['access']
     return self.apitoken
 
   def http_post(self,url):
