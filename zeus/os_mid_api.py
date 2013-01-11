@@ -67,7 +67,8 @@ class OSMA:
 
     server=params_init['server']
 
-    self.process_nic(vm['nic'])  
+    network=self.process_nic(vm['nic'])  
+    server['networks']=network
 
     if vm.has_key('metadata'):
       server['metadata']=vm['metadata']
@@ -102,7 +103,8 @@ class OSMA:
     ### not implemented yet.
     nic1=nic[0]
     network=nic1['network']
-    return 'none'
+    network_arr=[{'uuid':network}]
+    return network_arr
 
   def process_ssh_options(self,ssh_options):
     ''' process ssh_options for vm creation,
