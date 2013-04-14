@@ -1,0 +1,3 @@
+[submodule "env/production/modules"]
+	path = env/production/modules
+	url = git@github.com:danielscai/submod1.git
