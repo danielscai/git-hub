@@ -1,0 +1,44 @@
+<h1 id="zeusapi-后台脚本部署文档">zeusapi 后台脚本部署文档</h1>
+<dl>
+<dt>作者</dt>
+<dd><p>蔡云飞 <script type="text/javascript">
+<!--
+h='&#108;&#x65;&#x63;&#x61;&#x73;&#116;&#46;&#x63;&#x6f;&#x6d;&#46;&#x63;&#110;';a='&#64;';n='&#100;&#x61;&#110;&#x69;&#x65;&#108;&#x73;&#46;&#x63;&#x61;&#x69;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'">'+'<code>'+e+'</code>'+'<\/'+'a'+'>');
+// -->
+</script><noscript>&#100;&#x61;&#110;&#x69;&#x65;&#108;&#x73;&#46;&#x63;&#x61;&#x69;&#32;&#x61;&#116;&#32;&#108;&#x65;&#x63;&#x61;&#x73;&#116;&#32;&#100;&#x6f;&#116;&#32;&#x63;&#x6f;&#x6d;&#32;&#100;&#x6f;&#116;&#32;&#x63;&#110;</noscript></p>
+</dd>
+</dl>
+<h2 id="部署rbd限速脚本">1. 部署rbd限速脚本</h2>
+<h3 id="添加模块">1.1. 添加模块</h3>
+<ul>
+<li><p>在 <code>/etc/modules</code> 文件末尾添加</p>
+<pre><code>cls_cgroup</code></pre></li>
+</ul>
+<h3 id="挂载cgroup文件系统">1.2. 挂载cgroup文件系统</h3>
+<ul>
+<li><p>在 /etc/rc.local文件中添加如下代码</p>
+<pre><code>mkdir -p /sys/fs/cgroup/net_cls
+mount -t cgroup -o net_cls none /sys/fs/cgroup/net_cls</code></pre></li>
+</ul>
+<h3 id="签出最新代码">1.3. 签出最新代码</h3>
+<ul>
+<li><p>签出最新代码</p>
+<pre><code>cd /opt
+git clone git@telive.unfuddle.com:telive/zeusscripts.git</code></pre></li>
+</ul>
+<h3 id="部署到upstart-job">1.4. 部署到upstart job</h3>
+<ul>
+<li><p>copy到/etc/init</p>
+<pre><code>cp /opt/zeusscripts/libvirt-monitor/libvirt-monitor.conf /etc/init
+cp /opt/zeusscripts/libvirt-monitor/limit-rrd-rate/limit-rrd-rate.conf /etc/init
+
+start libvirt-monitor
+start limit-rrd-rate</code></pre></li>
+</ul>
+<h3 id="检查状态">1.5. 检查状态</h3>
+<ul>
+<li><p>使用status 查看状态</p>
+<pre><code>status libvirt-monitor
+status limit-rrd-rate</code></pre></li>
+</ul>
